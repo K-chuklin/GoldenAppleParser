@@ -7,21 +7,21 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium_stealth import stealth
 from time import sleep
 
-# options = webdriver.ChromeOptions()
-# options.add_argument("start-maximized")
-# # options.add_argument("--headless")
-# options.add_experimental_option("excludeSwitches", ["enable-automation"])
-# options.add_experimental_option('useAutomationExtension', False)
-# driver = webdriver.Chrome()
-#
-# stealth(driver,
-#         languages=["en-US", "en"],
-#         vendor="Google Inc.",
-#         platform="Win32",
-#         webgl_vendor="Intel Inc.",
-#         renderer="Intel Iris OpenGL Engine",
-#         fix_hairline=True,
-#         )
+options = webdriver.ChromeOptions()
+options.add_argument("start-maximized")
+# options.add_argument("--headless")
+options.add_experimental_option("excludeSwitches", ["enable-automation"])
+options.add_experimental_option('useAutomationExtension', False)
+driver = webdriver.Chrome()
+
+stealth(driver,
+        languages=["en-US", "en"],
+        vendor="Google Inc.",
+        platform="Win32",
+        webgl_vendor="Intel Inc.",
+        renderer="Intel Iris OpenGL Engine",
+        fix_hairline=True,
+        )
 
 
 ga_url = "https://goldapple.ru/parfjumerija?p=1"
@@ -95,7 +95,7 @@ class GoldenAppleParser:
             Итерируемся по ссылкам на товар и парсим с каждой ссылки необходимые данные в шаблон,
             после заполнения шаблона передаем его на запись в виде csv файла
         """
-        csv_form = [['url', 'name', 'price', 'rating', 'desc', 'usage', 'country']]     # Создаем заголовки для файла data.csv
+        csv_form = [['url', 'name', 'price', 'desc', 'usage', 'rating', 'country']]     # Создаем заголовки для файла data.csv
         for card_url in self.__read_urls():  # Получаем ссылку на товар
             self.driver.get(card_url)   # Переходим на страницу товара
             sleep(2)    # Пауза для загрузки карточки товара
@@ -109,9 +109,9 @@ class GoldenAppleParser:
 
                 try:  # Проверяем наличие инструкция по применению в караточке товара, через цикл по элементам JS
                     for i in range(1, 6):
-                        usage_element = data.find_element(By.XPATH,
-                                                          "//*[@id='__layout']/div/main/article/"
-                                                          f"div[4]/div[2]/div[1]/div[f1]/div[1]/div/button[{i}]")
+                        usage_element = data.find_element(By.XPATH, "//*[@id='__layout']/div/main/article/"
+                                                                    "div[4]/div[2]/div[1]/div[1]/div[1]/"
+                                                                    f"div/button[{i}]")
                         if usage_element.text != 'ПРИМЕНЕНИЕ':
                             continue
                         else:
@@ -141,7 +141,7 @@ class GoldenAppleParser:
                             continue
                         else:
                             self.driver.execute_script("arguments[0].click();", country_button)
-                            country = data.find_element(By.CSS_SELECTOR, "[class='_14lAW']").text[:28]
+                            country = data.find_element(By.CSS_SELECTOR, "[class='_14lAW']").text
                             csv_data.append(country)
                         break
                 except NoSuchElementException:  # Обрабатываем ошибку, если элемент отсутствует
@@ -165,4 +165,4 @@ class GoldenAppleParser:
 
 
 if __name__ == "__main__":
-    GoldenAppleParser(ga_url, 100).parser()
+    GoldenAppleParser(ga_url, 1).parser()
