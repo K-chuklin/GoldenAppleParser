@@ -4,7 +4,6 @@ from selenium import webdriver
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
-from selenium_stealth import stealth
 from time import sleep
 
 options = webdriver.ChromeOptions()
@@ -13,15 +12,6 @@ options.add_argument("start-maximized")
 options.add_experimental_option("excludeSwitches", ["enable-automation"])
 options.add_experimental_option('useAutomationExtension', False)
 driver = webdriver.Chrome()
-
-stealth(driver,
-        languages=["en-US", "en"],
-        vendor="Google Inc.",
-        platform="Win32",
-        webgl_vendor="Intel Inc.",
-        renderer="Intel Iris OpenGL Engine",
-        fix_hairline=True,
-        )
 
 
 ga_url = "https://goldapple.ru/parfjumerija?p=1"
@@ -165,4 +155,4 @@ class GoldenAppleParser:
 
 
 if __name__ == "__main__":
-    GoldenAppleParser(ga_url, 1).parser()
+    GoldenAppleParser(ga_url, 421).parser()
