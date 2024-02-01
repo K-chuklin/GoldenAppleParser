@@ -1,9 +1,9 @@
 import csv
-
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from time import sleep
 
 options = webdriver.ChromeOptions()
@@ -11,8 +11,8 @@ options.add_argument("start-maximized")
 # options.add_argument("--headless")
 options.add_experimental_option("excludeSwitches", ["enable-automation"])
 options.add_experimental_option('useAutomationExtension', False)
-driver = webdriver.Chrome()
-
+options.add_argument("--dns-prefetch-disable")
+driver = webdriver.Chrome(options=options)
 
 ga_url = "https://goldapple.ru/parfjumerija?p=1"
 
@@ -87,8 +87,11 @@ class GoldenAppleParser:
         """
         csv_form = [['url', 'name', 'price', 'desc', 'usage', 'rating', 'country']]     # Создаем заголовки для файла data.csv
         for card_url in self.__read_urls():  # Получаем ссылку на товар
-            driver.get(card_url)   # Переходим на страницу товара
-            sleep(4)    # Пауза для загрузки карточки товара
+            try:
+                driver.get(card_url)   # Переходим на страницу товара
+            except TimeoutException:
+                driver.refresh()
+            sleep(2)    # Пауза для загрузки карточки товара
             card_data = driver.find_elements(By.CSS_SELECTOR, "[class='xvuYB']")    # Загружаем карточку товара в переменную
 
             for data in card_data:
@@ -117,7 +120,15 @@ class GoldenAppleParser:
 
                 try:
                     rating = data.find_element(By.CSS_SELECTOR, "[class='dn1Tv']").text
-                    csv_data.append(rating)
+                    if len(rating) == 2:
+                        rating_1 = ((float(rating[0:1]) / 100) * 5)
+                        csv_data.append(rating_1)
+                    elif len(rating) == 3:
+                        rating_2 = ((float(rating[0:2]) / 100) * 5)
+                        csv_data.append(rating_2)
+                    elif len(rating) == 4:
+                        rating_3 = ((float(rating[0:3]) / 100) * 5)
+                        csv_data.append(rating_3)
                 except NoSuchElementException:  # Обрабатываем ошибку, если элемент отсутствует
                     rating = None
                     csv_data.append(rating)
