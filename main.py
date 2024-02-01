@@ -87,9 +87,9 @@ class GoldenAppleParser:
         """
         csv_form = [['url', 'name', 'price', 'desc', 'usage', 'rating', 'country']]     # Создаем заголовки для файла data.csv
         for card_url in self.__read_urls():  # Получаем ссылку на товар
-            self.driver.get(card_url)   # Переходим на страницу товара
-            sleep(2)    # Пауза для загрузки карточки товара
-            card_data = self.driver.find_elements(By.CSS_SELECTOR, "[class='xvuYB']")    # Загружаем карточку товара в переменную
+            driver.get(card_url)   # Переходим на страницу товара
+            sleep(4)    # Пауза для загрузки карточки товара
+            card_data = driver.find_elements(By.CSS_SELECTOR, "[class='xvuYB']")    # Загружаем карточку товара в переменную
 
             for data in card_data:
                 name = data.find_element(By.CSS_SELECTOR, "[class='fLd0k']").text    # Получаем имя товара
@@ -105,7 +105,7 @@ class GoldenAppleParser:
                         if usage_element.text != 'ПРИМЕНЕНИЕ':
                             continue
                         else:
-                            self.driver.execute_script("arguments[0].click();", usage_element)
+                            driver.execute_script("arguments[0].click();", usage_element)
                             usage = data.find_element(By.XPATH,
                                                       "//*[@id='__layout']/div/main/article/div[4]/div[2]/div["
                                                       "1]/div[2]/div/div/div/div/div").text
@@ -130,7 +130,7 @@ class GoldenAppleParser:
                         if country_button.text != "ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ":
                             continue
                         else:
-                            self.driver.execute_script("arguments[0].click();", country_button)
+                            driver.execute_script("arguments[0].click();", country_button)
                             country = data.find_element(By.CSS_SELECTOR, "[class='_14lAW']").text
                             csv_data.append(country)
                         break
@@ -155,4 +155,4 @@ class GoldenAppleParser:
 
 
 if __name__ == "__main__":
-    GoldenAppleParser(ga_url, 421).parser()
+    GoldenAppleParser(ga_url, 321).parse_page()
